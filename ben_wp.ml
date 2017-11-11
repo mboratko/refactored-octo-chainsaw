@@ -48,21 +48,44 @@ let%TEST "assign7" = run_wp "assign7" assign7 (BCmp (Eq, AConst 0, AConst 0))
 let%TEST "assign8" = run_wp "assign8" assign8 (BCmp (Eq, AOp (Add, AConst 1, AOp (Mul, AConst 2, AConst 3)), AConst 7))
 let%TEST "assign9" = run_wp "assign9" assign9 (BCmp (Eq, AOp (Add, AConst 1, AOp (Mul, AConst 2, AConst 3)), AConst 7))
 
+(* These are some convenience methods and constants to make tests more readable *)
+let x = AVar "x"
+let y = AVar "y"
+let z = AVar "z"
+
 let zero = AConst 0
-let zero_eq_zero = BCmp (Eq, zero, zero)
-let nzez_or_zez = BOr (BNot zero_eq_zero, zero_eq_zero) (* !0 == 0 || 0 == 0 *)
-let zez_or_zez = BOr (zero_eq_zero, zero_eq_zero) (* 0 == 0 || 0 == 0 *)
+let one = AConst 1
+let two = AConst 2
+
+let neg b = BNot b
+let band a b = BAnd (a,b)
+let bor a b = BOr (a,b)
+
+let equals a b = BCmp (Eq, a, b)
+let lt a b = BCmp (Lt, a, b)
+let lte a b = BCmp (Lte, a, b)
+let gt a b = BCmp (Gt, a, b)
+let gte a b = BCmp (Gte, a, b)
+
+let add a b = AOp (Add, a, b)
+let sub a b = AOp (Sub, a, b)
+let mul a b = AOp (Mul, a, b)
+
+let zero_eq_zero = equals zero zero
+let nzez_or_zez = bor (neg zero_eq_zero) (zero_eq_zero) (* !0 == 0 || 0 == 0 *)
+let zez_or_zez  = bor zero_eq_zero zero_eq_zero (* 0 == 0 || 0 == 0 *)
 let%TEST "if1"     = run_wp "if1"     if1     (BAnd (nzez_or_zez, zez_or_zez))
 
+let x_lt_zero  = lt x zero  (* x < 0 *)
+let zero_sub_x = sub zero x (* 0 - x *)
+let zero_sub_x_ge_zero = gte zero_sub_x zero (* 0 - x >= 0 *)
+let not_x_lt_zero = neg x_lt_zero            (* !(x < 0) *)
 
-let x = AVar "x"
-let x_lt_zero = (BCmp (Lt, x, zero))
-let z_min_x = (AOp (Sub, zero, x))
-let z_min_x_ge_z = (BCmp (Gte, z_min_x, zero))
-let not_z_lt_zero = BNot x_lt_zero
-let clause1 = BOr (not_z_lt_zero, z_min_x_ge_z)
-let x_ge_zero = (BCmp (Gte, x, zero))
-let clause2 = BOr (x_lt_zero, x_ge_zero)
+(* !(x < 0) || (0 - x >= 0) *)
+let clause1 = bor not_x_lt_zero zero_sub_x_ge_zero 
+let x_ge_zero = gte x zero
+let clause2 = bor x_lt_zero x_ge_zero
+(* if2: ((! x < 0) || 0 - x >= 0) && ((x < 0) || x >= 0) *)
 
 let%TEST "if2"     = run_wp "if2"     if2 (BAnd (clause1, clause2))
 
