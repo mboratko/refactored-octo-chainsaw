@@ -22,9 +22,9 @@ let rec show_aexp (a:aexp) = match a with
 
 let rec show_bexp (b:bexp) = match b with
   | BConst x -> if x then "true" else "false"
-  | BAnd (x,y) -> (show_bexp x) ^ " && " ^ (show_bexp y)
-  | BOr (x,y) -> (show_bexp x) ^ " || " ^ (show_bexp y)
-  | BNot x -> "!" ^ (show_bexp x)  
+  | BAnd (x,y) -> "(" ^ (show_bexp x) ^ ") && (" ^ (show_bexp y) ^ ")"
+  | BOr (x,y) -> "(" ^ (show_bexp x) ^ ") || (" ^ (show_bexp y) ^ ")"
+  | BNot x -> "!(" ^ (show_bexp x) ^ ")"
   | BCmp (c,x,y) -> (show_aexp x) ^ " " ^ (show_cmp c) ^ " " ^ (show_aexp y)
 
 let rec show_cmd (cmd:cmd) : string = match cmd with 
