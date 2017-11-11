@@ -1,3 +1,7 @@
+(*
+ * Tests written by ben for method wp
+ *)
+
 open Verif
 open Smtlib
 open Helpers
@@ -13,6 +17,8 @@ let assign4 = "ensures z == 1; a = 1; z = a;"
 let assign5 = "ensures z == 3; a = 1; b = 2; z = a + b;"
 let assign6 = "ensures z == 9; a = 2; b = 3; c = 4; z = a + b + c;"
 let assign7 = "ensures z == 0; a = 0; a = 1; a = 2; a = 0; z = a;"
+let assign8 = "ensures z == 7; a = 2 * 3; z = a; a = 1;  z = a + z;"
+let assign9 = "ensures z == 7; a = 2 * 3; z = a; a = 1;  z = a + z; z = z;"
 let skip1   = "requires true ; ensures true ; skip;"
 let skip2   = "requires true ; ensures false; skip;"
 
@@ -33,6 +39,8 @@ let%TEST "assign4" = run_wp "assign4" assign4 (BCmp (Eq, AConst 1, AConst 1))
 let%TEST "assign5" = run_wp "assign5" assign5 (BCmp (Eq, (AOp (Add, (AConst 1), (AConst 2))), AConst 3))
 let%TEST "assign6" = run_wp "assign6" assign6 (BCmp (Eq, AOp (Add, AOp (Add, AConst 2, AConst 3), (AConst 4 )), AConst 9))
 let%TEST "assign7" = run_wp "assign7" assign7 (BCmp (Eq, AConst 0, AConst 0))
+let%TEST "assign8" = run_wp "assign8" assign8 (BCmp (Eq, AOp (Add, AConst 1, AOp (Mul, AConst 2, AConst 3)), AConst 7))
+let%TEST "assign9" = run_wp "assign9" assign9 (BCmp (Eq, AOp (Add, AConst 1, AOp (Mul, AConst 2, AConst 3)), AConst 7))
 let%TEST "skip1"   = run_wp "skip1"   skip1   (BConst true )
 let%TEST "skip2"   = run_wp "skip2"   skip2   (BConst false)
 
