@@ -1,5 +1,4 @@
 *.swp
-*.ml
 *.byte
 test/
 *.pdf
