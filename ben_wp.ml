@@ -22,6 +22,15 @@ let assign9 = "ensures z == 7; a = 2 * 3; z = a; a = 1;  z = a + z; z = z;"
 
 let if1     = "ensures z == 0; a = 0; if (a == 0) z = 0; else z = 0;"
 let if2     = "ensures r >= 0; if (x < 0) r = 0 - x; else r = x;"
+let if3     = "ensures r >= 0; 
+if (a < b) {
+  r = 0;
+} else if (b < a) 
+{ 
+  r = 1; 
+} else r = 2;
+"
+
 
 let skip1   = "requires true ; ensures true ; skip;"
 let skip2   = "requires true ; ensures false; skip;"
@@ -88,6 +97,9 @@ let clause2 = bor x_lt_zero x_ge_zero
 (* if2: ((! x < 0) || 0 - x >= 0) && ((x < 0) || x >= 0) *)
 
 let%TEST "if2"     = run_wp "if2"     if2 (BAnd (clause1, clause2))
+
+(* TODO: Calculate if3's expected value and format it *)
+let%TEST "if3"     = run_wp "if3"     if3 (BAnd (clause1, clause2))
 
 let%TEST "skip1"   = run_wp "skip1"   skip1   (BConst true )
 let%TEST "skip2"   = run_wp "skip2"   skip2   (BConst false)
