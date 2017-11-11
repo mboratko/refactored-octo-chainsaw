@@ -2,8 +2,7 @@ open Verif
 open Smtlib
 open Helpers
 open Imp
-open Bentests
-open Testtest
+open Ben_wp
 module PTest = Ppx_test.Test
 
 
