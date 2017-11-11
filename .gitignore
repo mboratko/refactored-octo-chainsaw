@@ -1,0 +1,13 @@
+*.swp
+*.ml
+*.byte
+test/
+*.pdf
+_build/
+compsci631lib
+test/
+verif.ml
+verif.pdf
+z3
+z3lib
+z3_debug.sh
