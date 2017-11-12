@@ -38,4 +38,83 @@ module PTest = Ppx_test.Test
   run_verify "Trivial superfluous conditions"
     "ensures y > 0 || y < 0 || y ==0; skip;"
     true;;
+  run_verify "Repeated variable declaration"
+    "ensures x == 2; x = 1; x = 2;"
+    true;;
+  run_verify "Simple while loop with no invariant"
+    "ensures x >= 5;
+    while (x < 5)
+    invariant true
+    {
+      x = x + 1;
+    }"
+    true;;
+  run_verify "Bad simple while loop"
+    "ensures x >= 6;
+    while (x < 5)
+    invariant true
+    {
+      x = x + 1;
+    }"
+    false;;
+
+  (* Obviously we'd like to avoid this, but our current implementation
+     does not account for things like "decrement" which would show that
+     the loop eventually terminates.*)
+  run_verify "Infinite loop"
+    "requires x < 5;
+    ensures x >= 5;
+    while (x < 5)
+    invariant true
+    {
+      skip;
+    }"
+    true;;
+  
+  run_verify "False invariant on enter"
+  "requires x < 1;
+  ensures x > 1;
+  while (x < 1)
+  invariant x > 1
+  {
+    x = x + 1;
+  }"
+  false;;
+
+  run_verify "Simple invariant test"
+  "ensures x == y;
+  x = 10;
+  y = 0;
+  while (x > y)
+  invariant 10 == x + y && y <= x
+  {
+    x = x - 1;
+    y = y + 1;
+  }"
+  true;;
+
+  run_verify "Catch invariant not actually invariant"
+  "ensures x == y;
+  x = 10;
+  y = 0;
+  while (x > y)
+  invariant 10 == x + y && y <= x
+  {
+    x = x - 1;
+    y = x + 1;
+  }"
+  false;;
+
+  run_verify "Euclidean Algorithm"
+    "requires n > 0 && m >= 0;
+    ensures m == q * n + r && r >= 0 && r < n;
+    r = m;
+    q = 0;
+    while (r >= n)
+    invariant m == q * n + r && r >= 0
+    {
+      q = q + 1;
+      r = r - n;
+    }"
+    true;;
 ]

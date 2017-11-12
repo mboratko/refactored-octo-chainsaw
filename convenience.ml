@@ -5,7 +5,7 @@ open Imp
 (* Helper functions *)
 let run_wp test_name s expected = 
   let (pre,cmd,post) = from_string s in
-  let result = wp cmd post in
+  let result, loop_cond = wp cmd post in
   if result = expected then true else
     (Printf.printf "[!] Error: In test %s\n    
     Found result: %s 
