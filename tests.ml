@@ -11,6 +11,7 @@ open Imp
 
 (*  vvv  Add your test files HERE!  vvv  *)
 open Ben_wp
+open Mike_wp
 
 
 
