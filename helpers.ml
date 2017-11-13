@@ -36,6 +36,3 @@ let rec show_cmd (cmd:cmd) : string = match cmd with
   | CWhile (cond, invar, c) -> "while " ^ (show_bexp cond) ^
           " invariant " ^ (show_bexp invar) ^ "{ " ^ (show_cmd c) ^ " }"
   | CSeq (c1, c2) -> (show_cmd c1) ^ " " ^ (show_cmd c2)
-
-
-

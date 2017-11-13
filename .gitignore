@@ -10,3 +10,5 @@ verif.pdf
 z3
 z3lib
 z3_debug.sh
+.merlin
+merlin-init.sh
