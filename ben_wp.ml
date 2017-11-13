@@ -45,8 +45,8 @@ let run_wp test_name s expected =
     but expected: %s\n" test_name (show_bexp result) (show_bexp expected); false)
 
 (* Test wp *)
-let%TEST "abort1"  = run_wp "abort1"  abort1  (BConst false)
-let%TEST "abort2"  = run_wp "abort2"  abort2  (BConst false)
+let%TEST "abort1"  = run_wp "abort1"  abort1  (BConst true)
+let%TEST "abort2"  = run_wp "abort2"  abort2  (BConst true)
 let%TEST "assign1" = run_wp "assign1" assign1 (BConst true )
 let%TEST "assign2" = run_wp "assign2" assign2 (BCmp (Gt, AOp (Add, AConst 2, AVar "y" ), AConst 2))
 let%TEST "assign3" = run_wp "assign3" assign3 (BCmp (Gt, AOp (Mul, AVar "x", AVar "y" ), AConst 2))
