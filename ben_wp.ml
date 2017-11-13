@@ -5,6 +5,7 @@
 open Verif
 open Smtlib
 open Helpers
+open Convenience
 open Imp
 module PTest = Ppx_test.Test
 (* Programs *)
@@ -56,29 +57,6 @@ let%TEST "assign6" = run_wp "assign6" assign6 (BCmp (Eq, AOp (Add, AOp (Add, ACo
 let%TEST "assign7" = run_wp "assign7" assign7 (BCmp (Eq, AConst 0, AConst 0))
 let%TEST "assign8" = run_wp "assign8" assign8 (BCmp (Eq, AOp (Add, AConst 1, AOp (Mul, AConst 2, AConst 3)), AConst 7))
 let%TEST "assign9" = run_wp "assign9" assign9 (BCmp (Eq, AOp (Add, AConst 1, AOp (Mul, AConst 2, AConst 3)), AConst 7))
-
-(* These are some convenience methods and constants to make tests more readable *)
-let x = AVar "x"
-let y = AVar "y"
-let z = AVar "z"
-
-let zero = AConst 0
-let one = AConst 1
-let two = AConst 2
-
-let neg b = BNot b
-let band a b = BAnd (a,b)
-let bor a b = BOr (a,b)
-
-let equals a b = BCmp (Eq, a, b)
-let lt a b = BCmp (Lt, a, b)
-let lte a b = BCmp (Lte, a, b)
-let gt a b = BCmp (Gt, a, b)
-let gte a b = BCmp (Gte, a, b)
-
-let add a b = AOp (Add, a, b)
-let sub a b = AOp (Sub, a, b)
-let mul a b = AOp (Mul, a, b)
 
 let zero_eq_zero = equals zero zero
 let nzez_or_zez = bor (neg zero_eq_zero) (zero_eq_zero) (* !0 == 0 || 0 == 0 *)
