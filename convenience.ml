@@ -14,7 +14,8 @@ let run_wp test_name s expected =
 let run_verify test_name s expected = 
   let (pre,cmd,post) = from_string s in
   let result = verify pre cmd post in
-  result = expected
+  if result = expected then true else
+    (Printf.printf "[!] Error: In test %s\n" test_name; false)
 
 (* These are some convenience methods and constants to make tests more readable *)
 let x = AVar "x"

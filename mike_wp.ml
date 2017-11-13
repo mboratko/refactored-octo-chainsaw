@@ -27,6 +27,8 @@ module PTest = Ppx_test.Test
     (bif btrue (equals one one) (equals two one));;
   run_wp "Mixed assignment if" "ensures x == y; if (x > y) y = x; else x = y;"
     (bif (gt x y) (equals x x) (equals y y));;
+  run_wp "Increment" "ensures 2 * x == x * 2; x = x + 1;"
+    (equals (mul two (add x one)) (mul (add x one) two));;
 ]
 
 (* Tests of verify *)
@@ -117,4 +119,104 @@ module PTest = Ppx_test.Test
       r = r - n;
     }"
     true;;
+  
+  run_verify "Broken Eucliden Algorithm"
+    "requires n > 0 && m >= 0;
+    ensures m == q * n + r && r >= 0 && r < n;
+    r = m;
+    q = 0;
+    while (r > n)
+    invariant m == q * n + r && r >= 0
+    {
+      q = q + 1;
+      r = r - n;
+    }"
+    false;;
+  
+  run_verify "Simple counting with while loop"
+    "requires m >= 0;
+    ensures x == m;
+    x = 0;
+    while (x < m)
+    invariant x <= m
+    {
+      x = x + 1;
+    }"
+    true;;
+
+  run_verify "Simple nested while loop counting"
+    "ensures x >= 3 && y >= 3;
+    x = 0;
+    y = 3;
+    while (x < 3)
+    invariant y >= 3
+    {
+      x = x + 1;
+      y = 0;
+      while (y < 3)
+      invariant true
+      {
+      y = y + 1;
+      }
+    }"
+    true;;
+  
+  run_verify "Simple multiplication with single while loop"
+    "requires m >= 0 && n >= 0;
+    ensures x == m * n;
+    x = 0;
+    a = 0;
+    while (a < m)
+    invariant x == a * n && a <= m
+    {
+    a = a + 1;
+    x = x + n;
+    }"
+    true;;
+
+  run_verify "Simple multiplication with nested while loops"
+    "requires m >= 0 && n >= 0;
+    ensures x == m * n;
+    x = 0;
+    a = 0;
+    while (a < m)
+    invariant x == a * n && m >= 0 && n >= 0 && a <=m
+    {
+      b = 0;
+      while (b < n)
+      invariant x == a * n + b && m >=0 && n >= 0 && b <= n && a < m
+      {
+        b = b + 1;
+        x = x + 1;
+      }
+      a = a + 1;
+    }"
+    true;;
+  
+  (*
+  Note, in this case, the a < m on the interior while loop was necessary to prove
+  the invariant of the first while loop. Even though we know this must be the case
+  when running the code, since to reach the inside of the first while loop we must
+  have had a < m, but the program isn't aware that we didn't modify a within the
+  second while loop, unless we also make it part of the interior invariant.
+  *)
+
+  run_verify "Nested while loop multiplication with insufficient invariant"
+    "requires m >= 0 && n >= 0;
+    ensures x == m * n;
+    x = 0;
+    a = 0;
+    while (a < m)
+    invariant x == a * n && m >= 0 && n >= 0 && a <=m
+    {
+      b = 0;
+      while (b < n)
+      invariant x == a * n + b && m >=0 && n >= 0 && b <= n
+      {
+        b = b + 1;
+        x = x + 1;
+      }
+      a = a + 1;
+    }"
+    false;;
 ]

@@ -18,7 +18,7 @@ let show_aop (op:aop) = match op with
 let rec show_aexp (a:aexp) = match a with
   | AConst n -> string_of_int n
   | AVar v -> v
-  | AOp (op, a1, a2) -> (show_aexp a1) ^ " " ^ (show_aop op) ^ " " ^ (show_aexp a2)
+  | AOp (op, a1, a2) -> "(" ^ (show_aexp a1) ^ " " ^ (show_aop op) ^ " " ^ (show_aexp a2) ^ ")"
 
 let rec show_bexp (b:bexp) = match b with
   | BConst x -> if x then "true" else "false"
